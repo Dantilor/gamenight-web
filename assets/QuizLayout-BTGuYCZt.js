@@ -1,0 +1,1 @@
+import{j as r,O as t}from"./index-BMr7BdHe.js";import{Q as o}from"./QuizGameContext-B41q9Ujq.js";/* empty css                      */function u(){return r.jsx(o,{children:r.jsx(t,{})})}export{u as default};
