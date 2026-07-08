@@ -1,0 +1,1 @@
+import{j as r,O as t}from"./index-B9-hqjNu.js";import{A as o}from"./AliasStateContext-CE6_MZ3d.js";/* empty css                      */function e(){return r.jsx(o,{children:r.jsx(t,{})})}export{e as default};
