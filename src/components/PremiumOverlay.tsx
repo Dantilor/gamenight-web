@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { haptic } from '../utils/telegram'
+import { useAuth } from '../auth/useAuth'
 import type { DocumentType } from '../data/documents'
 import DocumentModal from './DocumentModal'
 import { getTelegramWebApp, getInitData } from '../lib/telegram'
@@ -102,6 +103,8 @@ type Props = {
 
 export default function PremiumOverlay({ isOpen, onClose, onBuyPremium, asPage }: Props) {
   const { refresh } = usePremium()
+  const { user, mode, isAuthenticated } = useAuth()
+  const isWebGuest = mode === 'web' && user.source === 'guest'
   const [theme] = useTheme()
   const gem = GEMS_BY_THEME[theme]
   const [documentModalType, setDocumentModalType] = useState<DocumentType | null>(null)
@@ -137,6 +140,10 @@ export default function PremiumOverlay({ isOpen, onClose, onBuyPremium, asPage }
 
   const handleRestorePurchase = async () => {
     haptic('medium')
+    if (isWebGuest) {
+      setRestoreToast('Войдите в аккаунт, чтобы купить или восстановить подписку')
+      return
+    }
     setRestoreToast(null)
     setRestoreLoading(true)
     try {
@@ -192,6 +199,10 @@ export default function PremiumOverlay({ isOpen, onClose, onBuyPremium, asPage }
 
   const handleBuyPremium = async () => {
     haptic('medium')
+    if (isWebGuest) {
+      setError('Войдите в аккаунт, чтобы купить или восстановить подписку')
+      return
+    }
     if (onBuyPremium) {
       onBuyPremium()
       return
@@ -297,6 +308,9 @@ export default function PremiumOverlay({ isOpen, onClose, onBuyPremium, asPage }
             {error}
           </p>
         )}
+        {isWebGuest && (
+          <p className="premium-overlay__error">Войдите в аккаунт, чтобы купить или восстановить подписку</p>
+        )}
         {restoreToast && (
           <p className="premium-overlay__toast">
             {restoreToast}
@@ -380,7 +394,7 @@ export default function PremiumOverlay({ isOpen, onClose, onBuyPremium, asPage }
           type="button"
           className="premium-overlay__btn premium-overlay__btn--buy"
           onClick={handleBuyPremium}
-          disabled={loading || plansLoading || !selectedPlan}
+          disabled={loading || plansLoading || !selectedPlan || isWebGuest || (mode === 'web' && !isAuthenticated())}
         >
           <img src={gem} alt="" className="premium-overlay__btn-icon premium-overlay__btn-icon--gem" decoding="async" aria-hidden />
           <span className="premium-overlay__btn-label">
@@ -391,7 +405,7 @@ export default function PremiumOverlay({ isOpen, onClose, onBuyPremium, asPage }
           type="button"
           className="premium-overlay__btn premium-overlay__btn--restore"
           onClick={handleRestorePurchase}
-          disabled={restoreLoading}
+          disabled={restoreLoading || isWebGuest || (mode === 'web' && !isAuthenticated())}
         >
           <img src={iconRestorePurchases} alt="" className="premium-overlay__btn-icon premium-overlay__btn-icon--restore" decoding="async" aria-hidden />
           <span className="premium-overlay__btn-label">

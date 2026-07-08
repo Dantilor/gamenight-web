@@ -2,12 +2,15 @@ import { useState, useCallback, useRef } from 'react'
 import { useBack } from '../hooks/useBack'
 import { usePremium } from '../contexts/PremiumContext'
 import { getTelegramWebApp } from '../lib/telegram'
+import { getPlatform } from '../platform'
 import type { DocumentType } from '../data/documents'
 import { haptic, getTgUser, getInitData } from '../utils/telegram'
+import { useAuth } from '../auth/useAuth'
 import HomeButton from '../components/HomeButton'
 import BackButton from '../components/BackButton'
 import PremiumOverlay from '../components/PremiumOverlay'
 import DocumentModal from '../components/DocumentModal'
+import PhoneLoginModal from '../components/PhoneLoginModal'
 import './Profile.css'
 
 const SUPPORT_BOT_URL = 'https://t.me/GameNightHelp'
@@ -29,12 +32,24 @@ function getInitials(firstName?: string, lastName?: string): string {
 
 function Profile() {
   const handleBack = useBack('/')
-  const user = getTgUser()
+  const platform = getPlatform()
+  const telegramUser = getTgUser()
+  const { user: appUser, loginWithPhoneDev, logout, isAuthenticated } = useAuth()
+  const user = telegramUser ?? (appUser.source === 'web'
+    ? {
+        first_name: appUser.firstName ?? 'Web User',
+        username: appUser.username ?? undefined,
+        photo_url: undefined,
+      }
+    : null)
+  const isWebMode = platform.mode === 'web'
+  const isWebGuest = isWebMode && appUser.source === 'guest'
   const { isPremium, activeUntil, authError, authError401, serverError503, refreshPremium } = usePremium()
   const initData = getInitData()
   const userId = initData.userId ?? initData.user?.id
   const [premiumOverlayOpen, setPremiumOverlayOpen] = useState(false)
   const [documentModalType, setDocumentModalType] = useState<DocumentType | null>(null)
+  const [phoneLoginOpen, setPhoneLoginOpen] = useState(false)
   const [restoreStatus, setRestoreStatus] = useState<string | null>(null)
   const [restoreLoading, setRestoreLoading] = useState(false)
   const restoreTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -70,6 +85,7 @@ function Profile() {
   }, [])
 
   const getErrorMessage = () => {
+    if (isWebMode && !isAuthenticated()) return null
     if (authError401) return 'Откройте внутри Telegram'
     if (serverError503) return 'Сервис временно недоступен, попробуйте позже'
     if (authError) return 'Откройте внутри Telegram'
@@ -117,10 +133,15 @@ function Profile() {
               {user.username && (
                 <p className="profile-identity__username">@{user.username}</p>
               )}
+              {appUser.source === 'web' && appUser.phone && (
+                <p className="profile-identity__username">{appUser.phone}</p>
+              )}
             </>
           ) : (
             <p className="profile-identity__guest">
-              Откройте приложение внутри Telegram, чтобы увидеть профиль и статус Premium
+              {isWebMode
+                ? 'Войдите по номеру телефона, чтобы сохранить аккаунт и управлять подпиской.'
+                : 'Откройте приложение внутри Telegram, чтобы увидеть профиль и статус Premium'}
             </p>
           )}
 
@@ -131,6 +152,41 @@ function Profile() {
 
         {errorMessage && (
           <p className="profile-alert profile-alert--error">{errorMessage}</p>
+        )}
+
+        {isWebMode && (
+          <section className="profile-menu">
+            <h2 className="profile-menu__title">Аккаунт</h2>
+            <div className="profile-menu__panel">
+              {isWebGuest ? (
+                <button
+                  type="button"
+                  className="profile-menu__row"
+                  onClick={() => {
+                    haptic('light')
+                    setPhoneLoginOpen(true)
+                  }}
+                >
+                  <span className="profile-menu__icon" aria-hidden>📱</span>
+                  <span className="profile-menu__label">Войти по номеру телефона</span>
+                  <span className="profile-menu__chev" aria-hidden>›</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="profile-menu__row"
+                  onClick={() => {
+                    haptic('light')
+                    logout()
+                  }}
+                >
+                  <span className="profile-menu__icon" aria-hidden>🚪</span>
+                  <span className="profile-menu__label">Выйти из аккаунта</span>
+                  <span className="profile-menu__chev" aria-hidden>›</span>
+                </button>
+              )}
+            </div>
+          </section>
         )}
 
         <section className={`profile-pass${isPremium ? ' profile-pass--active' : ''}`}>
@@ -242,6 +298,11 @@ function Profile() {
       </div>
 
       <PremiumOverlay isOpen={premiumOverlayOpen} onClose={() => setPremiumOverlayOpen(false)} />
+      <PhoneLoginModal
+        isOpen={phoneLoginOpen}
+        onClose={() => setPhoneLoginOpen(false)}
+        onSubmit={(phone, code) => loginWithPhoneDev(phone, code)}
+      />
       <DocumentModal
         isOpen={documentModalType !== null}
         onClose={() => setDocumentModalType(null)}

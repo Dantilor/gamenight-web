@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { getInitData } from '../lib/telegram'
 import { getMe, ApiAuthError } from '../api/subscription'
+import { getCurrentUser } from '../auth/authClient'
+import { getPlatform } from '../platform'
 import { defaultUserState } from '../data/types'
 import { devLog, devWarn } from '../utils/devLog'
 
@@ -116,6 +118,22 @@ export function usePremiumStatus(): {
   }, [])
 
   const fetchStatus = useCallback(async (bypassCache = false): Promise<{ isPremium: boolean; activeUntil: string | null } | null> => {
+    const platform = getPlatform()
+    if (platform.mode === 'web') {
+      const webUser = getCurrentUser()
+      doneLoading({
+        isPremium: webUser.premium,
+        activeUntil: webUser.activeUntil ?? null,
+        authError: false,
+        authError401: false,
+        serverError503: false,
+      })
+      return {
+        isPremium: webUser.premium,
+        activeUntil: webUser.activeUntil ?? null,
+      }
+    }
+
     const initData = getInitData()
 
     if (!initData) {
