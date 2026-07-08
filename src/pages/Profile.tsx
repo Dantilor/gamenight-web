@@ -38,6 +38,7 @@ function Profile() {
     user: appUser,
     requestCode,
     loginWithPhoneDev,
+    getMe,
     createTelegramLinkCode,
     logout,
     isAuthenticated,
@@ -60,6 +61,7 @@ function Profile() {
   const [linkCode, setLinkCode] = useState<string | null>(null)
   const [linkUrl, setLinkUrl] = useState<string | null>(null)
   const [linkLoading, setLinkLoading] = useState(false)
+  const [statusLoading, setStatusLoading] = useState(false)
   const [linkError, setLinkError] = useState<string | null>(null)
   const [restoreStatus, setRestoreStatus] = useState<string | null>(null)
   const [restoreLoading, setRestoreLoading] = useState(false)
@@ -116,6 +118,15 @@ function Profile() {
     setLinkCode(result.code ?? null)
     setLinkUrl(result.telegramStartUrl ?? null)
   }, [createTelegramLinkCode])
+
+  const handleRefreshWebPremium = useCallback(async () => {
+    haptic('light')
+    setStatusLoading(true)
+    setLinkError(null)
+    await getMe()
+    await refreshPremium()
+    setStatusLoading(false)
+  }, [getMe, refreshPremium])
 
   const errorMessage = getErrorMessage()
   const activeUntilLabel = activeUntil
@@ -202,7 +213,7 @@ function Profile() {
                   className="profile-menu__row"
                   onClick={() => {
                     haptic('light')
-                    logout()
+                    void logout()
                   }}
                 >
                   <span className="profile-menu__icon" aria-hidden>🚪</span>
@@ -218,6 +229,9 @@ function Profile() {
           <section className="profile-menu">
             <h2 className="profile-menu__title">Привязка Telegram</h2>
             <div className="profile-menu__panel">
+              <p className="profile-pass__desc">
+                {appUser.telegramLinked ? 'Telegram привязан' : 'Telegram пока не привязан'}
+              </p>
               <button
                 type="button"
                 className="profile-menu__row"
@@ -230,7 +244,29 @@ function Profile() {
                 </span>
                 <span className="profile-menu__chev" aria-hidden>›</span>
               </button>
+              <button
+                type="button"
+                className="profile-menu__row"
+                onClick={handleRefreshWebPremium}
+                disabled={statusLoading}
+              >
+                <span className="profile-menu__icon" aria-hidden>🔄</span>
+                <span className="profile-menu__label">
+                  {statusLoading ? 'Проверяем…' : 'Проверить статус подписки'}
+                </span>
+                <span className="profile-menu__chev" aria-hidden>›</span>
+              </button>
               {linkError && <p className="profile-alert profile-alert--error">{linkError}</p>}
+              {isPremium && (
+                <p className="profile-pass__desc">
+                  Premium активен{activeUntilLabel ? ` до ${activeUntilLabel}` : ''}.
+                </p>
+              )}
+              {!isPremium && (
+                <p className="profile-pass__desc">
+                  Premium пока не активен. Оформление подписки на сайте добавим на следующем этапе.
+                </p>
+              )}
               {linkCode && (
                 <div className="profile-pass__inactive">
                   <p className="profile-pass__title">Код привязки: {linkCode}</p>

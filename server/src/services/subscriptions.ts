@@ -127,6 +127,29 @@ export async function getLatestActiveUntil(telegramId: string | number): Promise
   return row ? new Date(row.active_until) : null
 }
 
+export type LegacyPremiumStatus = {
+  premium: boolean
+  activeUntil: string | null
+  source: 'legacy_telegram_subscription' | null
+}
+
+/**
+ * Shared legacy premium check by Telegram ID.
+ * Keeps the same meaning as Telegram flow: premium when active_until > now().
+ */
+export async function getPremiumByTelegramId(telegramId: string | number): Promise<LegacyPremiumStatus> {
+  const activeUntilDate = await getLatestActiveUntil(telegramId)
+  if (!activeUntilDate) {
+    return { premium: false, activeUntil: null, source: null }
+  }
+  const premium = activeUntilDate > new Date()
+  return {
+    premium,
+    activeUntil: premium ? activeUntilDate.toISOString() : null,
+    source: premium ? 'legacy_telegram_subscription' : null,
+  }
+}
+
 export function addDays(date: Date, days: number): Date {
   const d = new Date(date)
   d.setDate(d.getDate() + days)

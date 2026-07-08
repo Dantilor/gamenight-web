@@ -4,6 +4,7 @@ export type AppUser = {
   phone?: string | null
   username?: string | null
   firstName?: string | null
+  telegramLinked?: boolean | null
   source: 'telegram' | 'web' | 'guest'
   premium: boolean
   activeUntil?: string | null

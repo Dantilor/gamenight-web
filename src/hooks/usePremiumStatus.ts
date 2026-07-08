@@ -243,6 +243,15 @@ export function usePremiumStatus(): {
     return () => window.removeEventListener('tcg_premium_sync', onSync)
   }, [fetchStatus])
 
+  useEffect(() => {
+    const onAuthChanged = () => {
+      if (getPlatform().mode !== 'web') return
+      fetchStatus(true)
+    }
+    window.addEventListener('gnh_auth_changed', onAuthChanged)
+    return () => window.removeEventListener('gnh_auth_changed', onAuthChanged)
+  }, [fetchStatus])
+
   const refresh = useCallback(async (): Promise<{ isPremium: boolean; activeUntil: string | null } | null> => {
     clearCache()
     return fetchStatus(true)

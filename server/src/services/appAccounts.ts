@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto'
 import { query } from '../db.js'
+import { getPremiumByTelegramId } from './subscriptions.js'
 
 const SESSION_TTL_DAYS = 30
 const LINK_CODE_TTL_MINUTES = 15
@@ -9,8 +10,9 @@ export type AppAccountUser = {
   id: string
   phone: string | null
   source: 'web'
-  premium: false
-  activeUntil: null
+  premium: boolean
+  activeUntil: string | null
+  telegramLinked: boolean
 }
 
 type AccountRow = {
@@ -31,14 +33,68 @@ export function normalizePhoneE164(phoneRaw: string): string | null {
   return normalized
 }
 
-function buildAppAccountUser(account: AccountRow): AppAccountUser {
+function buildAppAccountUser(account: AccountRow, premium: boolean, activeUntil: string | null, telegramLinked: boolean): AppAccountUser {
   return {
     id: account.id,
     phone: account.phone_e164,
     source: 'web',
-    premium: false,
-    activeUntil: null,
+    premium,
+    activeUntil,
+    telegramLinked,
   }
+}
+
+type TelegramIdentityRow = {
+  provider_user_id: string
+}
+
+async function getTelegramIdentityByAccountId(accountId: string): Promise<TelegramIdentityRow | null> {
+  const res = await query<TelegramIdentityRow>(
+    `SELECT provider_user_id
+     FROM app_account_identities
+     WHERE account_id = $1
+       AND provider = 'telegram'
+     LIMIT 1`,
+    [accountId],
+  )
+  return res.rows[0] ?? null
+}
+
+export async function getPremiumByAppAccountId(accountId: string): Promise<{
+  premium: boolean
+  activeUntil: string | null
+  source: 'legacy_telegram_subscription' | null
+  telegramLinked: boolean
+}> {
+  const telegramIdentity = await getTelegramIdentityByAccountId(accountId)
+  if (!telegramIdentity) {
+    return { premium: false, activeUntil: null, source: null, telegramLinked: false }
+  }
+  const premium = await getPremiumByTelegramId(telegramIdentity.provider_user_id)
+  return {
+    premium: premium.premium,
+    activeUntil: premium.activeUntil,
+    source: premium.source,
+    telegramLinked: true,
+  }
+}
+
+async function getAccountById(accountId: string): Promise<AccountRow | null> {
+  const res = await query<AccountRow>(
+    `SELECT id, phone_e164
+     FROM app_accounts
+     WHERE id = $1
+     LIMIT 1`,
+    [accountId],
+  )
+  return res.rows[0] ?? null
+}
+
+export async function getWebUserByAccountId(accountId: string): Promise<AppAccountUser | null> {
+  const account = await getAccountById(accountId)
+  if (!account) return null
+  const premium = await getPremiumByAppAccountId(account.id)
+  return buildAppAccountUser(account, premium.premium, premium.activeUntil, premium.telegramLinked)
 }
 
 async function getAccountByPhone(phone: string): Promise<AccountRow | null> {
@@ -101,7 +157,8 @@ export async function findAccountBySessionToken(token: string): Promise<AppAccou
     [tokenHash],
   )
   const row = res.rows[0]
-  return row ? buildAppAccountUser(row) : null
+  if (!row) return null
+  return getWebUserByAccountId(row.id)
 }
 
 export async function deleteSessionToken(token: string): Promise<void> {
@@ -117,7 +174,7 @@ export async function ensurePhoneLogin(phoneRaw: string): Promise<{ token: strin
   const account = await findOrCreateAccountByPhone(phone)
   await upsertPhoneIdentity(account.id, phone)
   const token = await createWebSessionToken(account.id)
-  return { token, user: buildAppAccountUser(account) }
+  return { token, user: buildAppAccountUser(account, false, null, false) }
 }
 
 function randomLinkCode(length = 6): string {
