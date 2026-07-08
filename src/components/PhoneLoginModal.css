@@ -13,13 +13,21 @@
 }
 
 .phone-login-modal__card {
+  --plm-text: #f5f7ff;
+  --plm-muted: rgba(245, 247, 255, 0.72);
+  --plm-input-bg: rgba(7, 10, 22, 0.72);
+  --plm-input-border: rgba(255, 255, 255, 0.16);
+  --plm-btn-text: #ffffff;
+  --plm-btn-bg: linear-gradient(135deg, #ff3cac 0%, #a855f7 55%, #2bd2ff 100%);
+  --plm-btn-shadow: 0 12px 26px rgba(139, 77, 255, 0.3);
   position: relative;
   width: min(420px, calc(100vw - 24px));
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  background: var(--bg1);
+  background: var(--bg1, #14182b);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
   padding: 18px;
+  color: var(--plm-text);
 }
 
 .phone-login-modal__close {
@@ -28,7 +36,7 @@
   right: 10px;
   border: 0;
   background: transparent;
-  color: var(--text);
+  color: var(--plm-text);
   font-size: 18px;
   cursor: pointer;
 }
@@ -40,7 +48,7 @@
 
 .phone-login-modal__hint {
   margin: 0 0 12px;
-  color: var(--muted);
+  color: var(--plm-muted);
   font-size: 13px;
 }
 
@@ -48,16 +56,16 @@
   display: grid;
   gap: 6px;
   margin-bottom: 10px;
-  color: var(--muted);
+  color: var(--plm-muted);
   font-size: 13px;
 }
 
 .phone-login-modal__input {
   width: 100%;
   border-radius: 12px;
-  border: 1px solid var(--line);
-  background: var(--bg0);
-  color: var(--text);
+  border: 1px solid var(--plm-input-border);
+  background: var(--plm-input-bg);
+  color: var(--plm-text);
   padding: 10px 12px;
   font-size: 15px;
 }
@@ -73,8 +81,31 @@
   border: 0;
   border-radius: 12px;
   padding: 11px 14px;
-  background: var(--accent);
-  color: var(--accent-contrast, #fff);
+  background: var(--plm-btn-bg);
+  color: var(--plm-btn-text);
+  box-shadow: var(--plm-btn-shadow);
   font-weight: 700;
   cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+.phone-login-modal__btn:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.phone-login-modal__btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+[data-theme="neon-light"] .phone-login-modal__card,
+[data-theme="sunset"] .phone-login-modal__card,
+[data-theme="minimal-calm"] .phone-login-modal__card {
+  --plm-text: #1f2433;
+  --plm-muted: #5c667f;
+  --plm-input-bg: #ffffff;
+  --plm-input-border: rgba(31, 36, 51, 0.14);
+  --plm-btn-text: #ffffff;
+  --plm-btn-shadow: 0 10px 22px rgba(110, 95, 170, 0.24);
 }

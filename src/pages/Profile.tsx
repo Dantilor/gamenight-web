@@ -221,7 +221,7 @@ function Profile() {
                   </p>
                   <button
                     type="button"
-                    className="profile-menu__row"
+                    className="profile-menu__row profile-menu__row--cta"
                     onClick={() => {
                       haptic('light')
                       setPhoneLoginOpen(true)
