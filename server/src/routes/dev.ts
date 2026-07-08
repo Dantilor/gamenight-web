@@ -19,7 +19,7 @@ function hasAdminAccess(req: Request): boolean {
 router.post('/dev/grant-premium', async (req: Request, res: Response) => {
   try {
     if (!hasAdminAccess(req)) {
-      res.status(401).json({ ok: false, error: 'unauthorized' })
+      res.status(403).json({ ok: false, error: 'forbidden' })
       return
     }
 

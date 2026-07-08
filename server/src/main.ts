@@ -52,6 +52,14 @@ app.get('/health', (_req, res) => {
   res.status(200).send('ok')
 })
 
+app.get('/api/health', (_req, res) => {
+  res.status(200).json({
+    ok: true,
+    service: 'gamenight-web-api',
+    time: new Date().toISOString(),
+  })
+})
+
 // Telegram webhook — must be before other routes, always 200
 app.post(BOT_WEBHOOK_PATH, async (req, res) => {
   console.log('[telegram] POST', BOT_WEBHOOK_PATH)

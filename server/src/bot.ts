@@ -6,8 +6,13 @@ import { confirmTelegramLink } from './services/appAccounts.js'
 console.log('[bot] module loaded')
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || process.env.BOT_TOKEN
+const BOT_ENABLED = process.env.BOT_ENABLED === 'true'
 
-if (!BOT_TOKEN) {
+if (!BOT_ENABLED) {
+  console.warn('[bot] BOT_ENABLED is not true; bot is disabled')
+}
+
+if (BOT_ENABLED && !BOT_TOKEN) {
   console.warn('[bot] BOT_TOKEN not set; bot will be null')
 }
 
@@ -24,7 +29,7 @@ const START_MESSAGE = `<b>Ваш вечер начинается прямо се
 /** Последнее сообщение бота в /start для каждого чата — удаляется при повторном /start */
 const lastStartMessageId = new Map<number | string, number>()
 
-export const bot = BOT_TOKEN ? new Telegraf(BOT_TOKEN) : null
+export const bot = BOT_ENABLED && BOT_TOKEN ? new Telegraf(BOT_TOKEN) : null
 
 function extractStartPayload(ctx: Context): string {
   const maybeStartPayload = (ctx as Context & { startPayload?: unknown }).startPayload

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Replace https://example.com with your real production domain -->
+  <url>
+    <loc>https://example.com/</loc>
+  </url>
+  <url>
+    <loc>https://example.com/games</loc>
+  </url>
+  <url>
+    <loc>https://example.com/alias</loc>
+  </url>
+  <url>
+    <loc>https://example.com/activity</loc>
+  </url>
+  <url>
+    <loc>https://example.com/mafia</loc>
+  </url>
+  <url>
+    <loc>https://example.com/quiz</loc>
+  </url>
+  <url>
+    <loc>https://example.com/truth-dare</loc>
+  </url>
+</urlset>

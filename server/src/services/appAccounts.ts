@@ -118,6 +118,68 @@ export async function getPremiumByAppAccountId(accountId: string): Promise<{
   return { premium: false, activeUntil: null, source: null, telegramLinked }
 }
 
+export async function getAppAccountIdByTelegramId(telegramId: string | number): Promise<string | null> {
+  const telegramIdStr = String(telegramId).trim()
+  if (!telegramIdStr) return null
+  const res = await query<{ account_id: string }>(
+    `SELECT account_id
+     FROM app_account_identities
+     WHERE provider = 'telegram'
+       AND provider_user_id = $1
+     LIMIT 1`,
+    [telegramIdStr],
+  )
+  return res.rows[0]?.account_id ?? null
+}
+
+export async function getPremiumForTelegramUser(telegramId: string | number): Promise<{
+  premium: boolean
+  activeUntil: string | null
+  source: 'app_entitlement' | 'legacy_telegram_subscription' | null
+}> {
+  const legacyPremium = await getPremiumByTelegramId(telegramId)
+  const accountId = await getAppAccountIdByTelegramId(telegramId)
+  const entitlementPremium = accountId
+    ? await getPremiumByAppEntitlement(accountId)
+    : { premium: false, activeUntil: null, source: null as 'app_entitlement' | null }
+
+  const legacyDate = legacyPremium.activeUntil ? new Date(legacyPremium.activeUntil) : null
+  const entitlementDate = entitlementPremium.activeUntil ? new Date(entitlementPremium.activeUntil) : null
+
+  if (legacyDate && entitlementDate) {
+    if (entitlementDate >= legacyDate) {
+      return {
+        premium: true,
+        activeUntil: entitlementPremium.activeUntil,
+        source: 'app_entitlement',
+      }
+    }
+    return {
+      premium: true,
+      activeUntil: legacyPremium.activeUntil,
+      source: 'legacy_telegram_subscription',
+    }
+  }
+
+  if (legacyDate) {
+    return {
+      premium: true,
+      activeUntil: legacyPremium.activeUntil,
+      source: 'legacy_telegram_subscription',
+    }
+  }
+
+  if (entitlementDate) {
+    return {
+      premium: true,
+      activeUntil: entitlementPremium.activeUntil,
+      source: 'app_entitlement',
+    }
+  }
+
+  return { premium: false, activeUntil: null, source: null }
+}
+
 async function getAccountById(accountId: string): Promise<AccountRow | null> {
   const res = await query<AccountRow>(
     `SELECT id, phone_e164

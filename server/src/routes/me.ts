@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express'
 import { verifyInitData } from '../telegram/verifyInitData.js'
-import { ensureUser, getLatestActiveUntil } from '../services/subscriptions.js'
+import { ensureUser } from '../services/subscriptions.js'
+import { getPremiumForTelegramUser } from '../services/appAccounts.js'
 
 function toInitDataString(v: unknown): string {
   if (typeof v === 'string') return v
@@ -35,10 +36,9 @@ router.get('/me', async (req: Request, res: Response) => {
 
   try {
     await ensureUser(telegramId)
-    const activeUntilDate = await getLatestActiveUntil(telegramId)
-    const now = new Date()
-    const premium = activeUntilDate != null && activeUntilDate > now
-    const activeUntil = activeUntilDate ? activeUntilDate.toISOString() : null
+    const premiumStatus = await getPremiumForTelegramUser(telegramId)
+    const premium = premiumStatus.premium
+    const activeUntil = premiumStatus.activeUntil
 
     res.status(200).json({
       telegramId,
@@ -46,6 +46,7 @@ router.get('/me', async (req: Request, res: Response) => {
       premium,
       premiumUntil: activeUntil,
       activeUntil,
+      source: premiumStatus.source,
     })
   } catch (e) {
     console.error('[API] /api/me DB error:', e)

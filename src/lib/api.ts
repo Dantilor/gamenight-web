@@ -5,8 +5,9 @@
 import { getInitData } from './telegram'
 
 const BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL ||
   import.meta.env.VITE_API_URL ||
-  'https://telegram-card-game.onrender.com'
+  (import.meta.env.DEV ? 'http://localhost:3001' : 'https://telegram-card-game.onrender.com')
 ).replace(/\/$/, '')
 
 const API_TIMEOUT_MS = 7000 // Не зависать при cold start Render, но не держать UI 15+ секунд
@@ -16,7 +17,7 @@ const isDev = import.meta.env.DEV
 function checkBaseUrl(): void {
   if (!isDev) return
   if (!BASE_URL || BASE_URL.length < 5) {
-    console.warn('[TCG] VITE_API_URL пустой, используется fallback. Проверьте .env')
+    console.warn('[TCG] VITE_API_BASE_URL/VITE_API_URL пустой, используется fallback. Проверьте .env')
   } else if (!BASE_URL.startsWith('https://') && !BASE_URL.startsWith('http://localhost')) {
     console.warn('[TCG] API URL должен быть https в проде. Текущий:', BASE_URL)
   }
