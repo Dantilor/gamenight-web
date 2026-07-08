@@ -4,8 +4,12 @@ const API_BASE_URL = (
   import.meta.env.VITE_API_BASE_URL ||
   import.meta.env.VITE_API_URL ||
   import.meta.env.VITE_API_BASE ||
-  (import.meta.env.DEV ? 'http://localhost:3001' : 'https://telegram-card-game.onrender.com')
+  (import.meta.env.DEV ? 'http://localhost:3001' : '')
 ).replace(/\/$/, '')
+
+if (!API_BASE_URL) {
+  console.warn('[TCG] API base URL is empty. Set VITE_API_BASE_URL for production deploy.')
+}
 
 function getInitData(): string {
   return getPlatform().initData ?? ''
