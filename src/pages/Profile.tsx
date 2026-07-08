@@ -36,9 +36,11 @@ function Profile() {
   const telegramUser = getTgUser()
   const {
     user: appUser,
+    isLoading,
     requestCode,
     loginWithPhoneDev,
     getMe,
+    refreshAuth,
     createTelegramLinkCode,
     grantPremiumDev,
     logout,
@@ -125,10 +127,10 @@ function Profile() {
     haptic('light')
     setStatusLoading(true)
     setLinkError(null)
-    await getMe()
+    await refreshAuth()
     await refreshPremium()
     setStatusLoading(false)
-  }, [getMe, refreshPremium])
+  }, [refreshAuth, refreshPremium])
 
   const handleDevGrantPremium = useCallback(async () => {
     if (!import.meta.env.DEV || !appUser.id) return
@@ -191,7 +193,9 @@ function Profile() {
             </>
           ) : (
             <p className="profile-identity__guest">
-              {isWebMode
+              {isLoading && isWebMode
+                ? 'Загружаем аккаунт...'
+                : isWebMode
                 ? 'Войдите по номеру телефона, чтобы сохранить аккаунт и управлять подпиской.'
                 : 'Откройте приложение внутри Telegram, чтобы увидеть профиль и статус Premium'}
             </p>
@@ -208,34 +212,49 @@ function Profile() {
 
         {isWebMode && (
           <section className="profile-menu">
-            <h2 className="profile-menu__title">Аккаунт</h2>
+            <h2 className="profile-menu__title">Аккаунт GameNight Host</h2>
             <div className="profile-menu__panel">
               {isWebGuest ? (
-                <button
-                  type="button"
-                  className="profile-menu__row"
-                  onClick={() => {
-                    haptic('light')
-                    setPhoneLoginOpen(true)
-                  }}
-                >
-                  <span className="profile-menu__icon" aria-hidden>📱</span>
-                  <span className="profile-menu__label">Войти по номеру телефона</span>
-                  <span className="profile-menu__chev" aria-hidden>›</span>
-                </button>
+                <>
+                  <p className="profile-pass__desc">
+                    Войдите по номеру телефона, чтобы сохранить Premium, привязать Telegram и играть с любого устройства.
+                  </p>
+                  <button
+                    type="button"
+                    className="profile-menu__row"
+                    onClick={() => {
+                      haptic('light')
+                      setPhoneLoginOpen(true)
+                    }}
+                  >
+                    <span className="profile-menu__icon" aria-hidden>📱</span>
+                    <span className="profile-menu__label">Войти по телефону</span>
+                    <span className="profile-menu__chev" aria-hidden>›</span>
+                  </button>
+                </>
               ) : (
-                <button
-                  type="button"
-                  className="profile-menu__row"
-                  onClick={() => {
-                    haptic('light')
-                    void logout()
-                  }}
-                >
-                  <span className="profile-menu__icon" aria-hidden>🚪</span>
-                  <span className="profile-menu__label">Выйти из аккаунта</span>
-                  <span className="profile-menu__chev" aria-hidden>›</span>
-                </button>
+                <>
+                  {appUser.phone && <p className="profile-pass__desc">Телефон: {appUser.phone}</p>}
+                  <p className="profile-pass__desc">
+                    Статус Premium: {isPremium ? 'активен' : 'не активен'}
+                    {activeUntilLabel ? ` до ${activeUntilLabel}` : ''}
+                  </p>
+                  <p className="profile-pass__desc">
+                    Telegram: {appUser.telegramLinked ? 'привязан' : 'не привязан'}
+                  </p>
+                  <button
+                    type="button"
+                    className="profile-menu__row"
+                    onClick={() => {
+                      haptic('light')
+                      void logout()
+                    }}
+                  >
+                    <span className="profile-menu__icon" aria-hidden>🚪</span>
+                    <span className="profile-menu__label">Выйти</span>
+                    <span className="profile-menu__chev" aria-hidden>›</span>
+                  </button>
+                </>
               )}
             </div>
           </section>
@@ -420,7 +439,11 @@ function Profile() {
         )}
       </div>
 
-      <PremiumOverlay isOpen={premiumOverlayOpen} onClose={() => setPremiumOverlayOpen(false)} />
+      <PremiumOverlay
+        isOpen={premiumOverlayOpen}
+        onClose={() => setPremiumOverlayOpen(false)}
+        onRequireLogin={() => setPhoneLoginOpen(true)}
+      />
       <PhoneLoginModal
         isOpen={phoneLoginOpen}
         onClose={() => setPhoneLoginOpen(false)}

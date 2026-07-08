@@ -17,8 +17,10 @@ type LoginResult = { ok: boolean; user: AppUser; error?: string }
 export function useAuth(): {
   user: AppUser
   mode: 'telegram' | 'web'
+  isLoading: boolean
   getCurrentUser: () => AppUser
   isAuthenticated: () => boolean
+  refreshAuth: () => Promise<{ ok: boolean; user: AppUser; error?: string }>
   requestCode: (phone: string) => Promise<{ ok: boolean; error?: string }>
   verifyCode: (phone: string, code: string) => Promise<LoginResult>
   loginWithPhoneDev: (phone: string, code: string) => Promise<LoginResult>
@@ -27,10 +29,12 @@ export function useAuth(): {
   grantPremiumDev: (accountId: string, days?: number) => Promise<{ ok: boolean; premium?: boolean; activeUntil?: string | null; source?: string | null; error?: string }>
   logout: () => Promise<void>
 } {
+  const mode = getPlatform().mode
   const [user, setUser] = useState<AppUser>(() => getCurrentUserClient())
+  const [isLoading, setIsLoading] = useState<boolean>(mode === 'web')
 
   useEffect(() => {
-    if (getPlatform().mode !== 'web') return
+    if (mode !== 'web') return
     getMeClient()
       .then((result) => {
         if (result.ok) setUser(result.user)
@@ -38,7 +42,8 @@ export function useAuth(): {
       .catch(() => {
         // ignore
       })
-  }, [])
+      .finally(() => setIsLoading(false))
+  }, [mode])
 
   useEffect(() => {
     const sync = () => setUser(getCurrentUserClient())
@@ -54,28 +59,38 @@ export function useAuth(): {
   const isAuthenticated = useCallback(() => isAuthenticatedClient(), [])
   const requestCode = useCallback((phone: string) => requestCodeClient(phone), [])
   const verifyCode = useCallback(async (phone: string, code: string): Promise<LoginResult> => {
+    setIsLoading(true)
     const result = await verifyCodeClient(phone, code)
     setUser(result.user)
+    setIsLoading(false)
     return result
   }, [])
   const loginWithPhoneDev = useCallback((phone: string, code: string) => verifyCode(phone, code), [verifyCode])
-  const getMe = useCallback(async () => {
+  const getMe = useCallback(async (): Promise<{ ok: boolean; user: AppUser; error?: string }> => {
+    if (mode !== 'web') return { ok: true, user: getCurrentUserClient() }
+    setIsLoading(true)
     const result = await getMeClient()
     if (result.ok) setUser(result.user)
+    setIsLoading(false)
     return result
-  }, [])
+  }, [mode])
+  const refreshAuth = useCallback(() => getMe(), [getMe])
   const createTelegramLinkCode = useCallback(() => createTelegramLinkCodeClient(), [])
   const grantPremiumDev = useCallback((accountId: string, days = 30) => grantPremiumDevClient(accountId, days), [])
   const logout = useCallback(async () => {
+    setIsLoading(true)
     await logoutClient()
     setUser(getCurrentUserClient())
+    setIsLoading(false)
   }, [])
 
   return {
     user,
-    mode: getPlatform().mode,
+    mode,
+    isLoading,
     getCurrentUser,
     isAuthenticated,
+    refreshAuth,
     requestCode,
     verifyCode,
     loginWithPhoneDev,

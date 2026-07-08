@@ -97,11 +97,12 @@ type Props = {
   isOpen: boolean
   onClose: () => void
   onBuyPremium?: () => void
+  onRequireLogin?: () => void
   /** Режим страницы: без оверлея, с кнопкой «Назад» */
   asPage?: boolean
 }
 
-export default function PremiumOverlay({ isOpen, onClose, onBuyPremium, asPage }: Props) {
+export default function PremiumOverlay({ isOpen, onClose, onBuyPremium, onRequireLogin, asPage }: Props) {
   const { refresh } = usePremium()
   const { user, mode, isAuthenticated } = useAuth()
   const isWebGuest = mode === 'web' && user.source === 'guest'
@@ -201,6 +202,7 @@ export default function PremiumOverlay({ isOpen, onClose, onBuyPremium, asPage }
     haptic('medium')
     if (isWebGuest) {
       setError('Войдите в аккаунт, чтобы купить или восстановить подписку')
+      onRequireLogin?.()
       return
     }
     if (onBuyPremium) {
@@ -309,7 +311,22 @@ export default function PremiumOverlay({ isOpen, onClose, onBuyPremium, asPage }
           </p>
         )}
         {isWebGuest && (
-          <p className="premium-overlay__error">Войдите в аккаунт, чтобы купить или восстановить подписку</p>
+          <>
+            <p className="premium-overlay__error">Войдите в аккаунт, чтобы купить или восстановить подписку</p>
+            {onRequireLogin && (
+              <button
+                type="button"
+                className="premium-overlay__btn premium-overlay__btn--buy"
+                onClick={() => {
+                  haptic('light')
+                  onRequireLogin()
+                }}
+              >
+                <img src={gem} alt="" className="premium-overlay__btn-icon premium-overlay__btn-icon--gem" decoding="async" aria-hidden />
+                <span className="premium-overlay__btn-label">Войти по телефону</span>
+              </button>
+            )}
+          </>
         )}
         {restoreToast && (
           <p className="premium-overlay__toast">
