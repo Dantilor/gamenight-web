@@ -1,0 +1,309 @@
+/* Default: neon-dark */
+:root,
+[data-theme="neon-dark"] {
+  --bg0: #0d0a1a;
+  --bg1: #181030;
+  --panel: rgba(20, 22, 45, 0.92);
+  --text: #F5F3FF;
+  --muted: rgba(245, 243, 255, 0.82);
+  --neonPink: #FF3CAC;
+  --neonCyan: #2BD2FF;
+  --neonPurple: #8A2BE2;
+  --primary: #FF3CAC;
+  --primary2: #8A2BE2;
+  --secondary: #2BD2FF;
+  --btn: #1a1a2e;
+  --btnText: #F5F3FF;
+  --danger: #FF4D4D;
+  --border: rgba(255, 255, 255, 0.12);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  /* Neon-dark: unify all glows to pink so background aura is always rose */
+  --glowPink: rgba(255, 60, 172, 0.45);
+  --glowCyan: rgba(255, 60, 172, 0.38);
+  --glowPurple: rgba(255, 120, 210, 0.35);
+  --cardHoverBorder: rgba(43, 210, 255, 0.35);
+  --blob1: rgba(255, 200, 230, 0.25);
+  --blob2: rgba(255, 160, 220, 0.24);
+  --blob3: rgba(255, 120, 210, 0.2);
+  --td-panel-bg: rgba(0, 0, 0, 0.45);
+  --td-text-strong: #fff;
+  --td-text-muted: rgba(255, 255, 255, 0.9);
+  --td-placeholder: rgba(255, 255, 255, 0.7);
+  --td-input-bg: rgba(0, 0, 0, 0.4);
+  --td-btn-ghost-bg: rgba(255, 255, 255, 0.12);
+  --td-border: rgba(255, 255, 255, 0.2);
+  --td-active-bg: rgba(255, 60, 172, 0.25);
+  --td-dare-bg: rgba(255, 60, 172, 0.15);
+  --td-dare-bg-strong: rgba(255, 60, 172, 0.2);
+  --td-dare-border: rgba(255, 60, 172, 0.3);
+  --td-truth-bg: rgba(43, 210, 255, 0.15);
+  --td-truth-bg-hover: rgba(43, 210, 255, 0.25);
+  --icon-accent: #00F0FF;
+  --adult-badge-bg: linear-gradient(135deg, rgba(234, 88, 12, 0.25) 0%, rgba(194, 65, 12, 0.35) 100%);
+  --adult-badge-color: #fb923c;
+  --adult-badge-border: rgba(234, 88, 12, 0.4);
+  --adult-badge-glow: rgba(251, 146, 60, 0.25);
+  --app-page-bg-color: #050816;
+  --app-page-bg-image:
+    radial-gradient(ellipse 120% 75% at 50% -18%, rgba(139, 77, 255, 0.16) 0%, rgba(139, 77, 255, 0.04) 42%, transparent 72%),
+    radial-gradient(ellipse 85% 55% at 100% 12%, rgba(59, 130, 255, 0.08) 0%, transparent 68%),
+    linear-gradient(180deg, #050816 0%, #060a1c 55%, #050816 100%);
+}
+
+/* neon-light — почти дневная, светлый лавандово-голубой */
+[data-theme="neon-light"] {
+  --bg0: #f7f5ff;
+  --bg1: #f7f5ff;
+  --panel: rgba(255, 255, 255, 0.95);
+  --text: #1A102A;
+  --muted: rgba(26, 16, 42, 0.8);
+  --neonPink: #a855f7;
+  --neonCyan: #06b6d4;
+  --neonPurple: #7c3aed;
+  --primary: #a855f7;
+  --primary2: #7c3aed;
+  --secondary: #06b6d4;
+  --btn: #7c3aed;
+  --btnText: #fff;
+  --danger: #dc2626;
+  --border: rgba(26, 16, 42, 0.12);
+  --shadow: 0 4px 24px rgba(26, 16, 42, 0.08);
+  --glowPink: rgba(168, 85, 247, 0.2);
+  --glowCyan: rgba(6, 182, 212, 0.18);
+  --glowPurple: rgba(124, 58, 237, 0.2);
+  --cardHoverBorder: rgba(6, 182, 212, 0.4);
+  --blob1: rgba(142, 99, 255, 0.06);
+  --blob2: rgba(85, 183, 255, 0.05);
+  --blob3: rgba(255, 101, 216, 0.04);
+  --td-panel-bg: rgba(255, 255, 255, 0.75);
+  --td-text-strong: #1A102A;
+  --td-text-muted: rgba(26, 16, 42, 0.85);
+  --td-placeholder: rgba(26, 16, 42, 0.6);
+  --td-input-bg: rgba(255, 255, 255, 0.9);
+  --td-btn-ghost-bg: rgba(26, 16, 42, 0.08);
+  --td-border: rgba(26, 16, 42, 0.2);
+  --td-active-bg: rgba(124, 58, 237, 0.2);
+  --td-dare-bg: rgba(124, 58, 237, 0.15);
+  --td-dare-bg-strong: rgba(124, 58, 237, 0.2);
+  --td-dare-border: rgba(124, 58, 237, 0.3);
+  --td-truth-bg: rgba(6, 182, 212, 0.15);
+  --td-truth-bg-hover: rgba(6, 182, 212, 0.25);
+  /* В Light выделение как в Мафии: бирюзовый фон + белый текст */
+  --selection-bg-light: rgba(6, 182, 212, 0.28);
+  --icon-accent: #6C63FF;
+  --adult-badge-bg: linear-gradient(135deg, rgba(194, 65, 12, 0.18) 0%, rgba(234, 88, 12, 0.25) 100%);
+  --adult-badge-color: #c2410c;
+  --adult-badge-border: rgba(194, 65, 12, 0.4);
+  --adult-badge-glow: rgba(194, 65, 12, 0.15);
+  --app-page-bg-color: #f7f5ff;
+  --app-page-bg-image:
+    radial-gradient(ellipse 110% 70% at 50% -12%, rgba(255, 101, 216, 0.12) 0%, rgba(255, 101, 216, 0.03) 40%, transparent 70%),
+    radial-gradient(ellipse 80% 50% at 85% 8%, rgba(85, 183, 255, 0.1) 0%, transparent 65%),
+    linear-gradient(180deg, #fbfaff 0%, #f7f5ff 50%, #f4f2ff 100%);
+}
+
+/* soft-light — мягкий светлый */
+[data-theme="soft-light"] {
+  --bg0: #f5f3ff;
+  --bg1: #ede9fe;
+  --panel: rgba(255, 255, 255, 0.98);
+  --text: #1e1b4b;
+  --muted: rgba(30, 27, 75, 0.8);
+  --neonPink: #c084fc;
+  --neonCyan: #22d3ee;
+  --neonPurple: #a78bfa;
+  --primary: #a78bfa;
+  --primary2: #7c3aed;
+  --secondary: #22d3ee;
+  --btn: #7c3aed;
+  --btnText: #fff;
+  --danger: #e11d48;
+  --border: rgba(30, 27, 75, 0.1);
+  --shadow: 0 4px 20px rgba(124, 58, 237, 0.12);
+  --glowPink: rgba(167, 139, 250, 0.25);
+  --glowCyan: rgba(34, 211, 238, 0.2);
+  --glowPurple: rgba(124, 58, 237, 0.2);
+  --cardHoverBorder: rgba(34, 211, 238, 0.4);
+  --blob1: rgba(167, 139, 250, 0.08);
+  --blob2: rgba(34, 211, 238, 0.08);
+  --blob3: rgba(124, 58, 237, 0.06);
+  --td-panel-bg: rgba(255, 255, 255, 0.85);
+  --td-text-strong: #1e1b4b;
+  --td-text-muted: rgba(30, 27, 75, 0.85);
+  --td-placeholder: rgba(30, 27, 75, 0.6);
+  --td-input-bg: rgba(255, 255, 255, 0.9);
+  --td-btn-ghost-bg: rgba(30, 27, 75, 0.08);
+  --td-border: rgba(30, 27, 75, 0.18);
+  --td-active-bg: rgba(124, 58, 237, 0.18);
+  --td-dare-bg: rgba(124, 58, 237, 0.15);
+  --td-dare-bg-strong: rgba(124, 58, 237, 0.2);
+  --td-dare-border: rgba(124, 58, 237, 0.3);
+  --td-truth-bg: rgba(34, 211, 238, 0.15);
+  --td-truth-bg-hover: rgba(34, 211, 238, 0.25);
+  --icon-accent: #6C63FF;
+  --adult-badge-bg: linear-gradient(135deg, rgba(194, 65, 12, 0.2) 0%, rgba(234, 88, 12, 0.3) 100%);
+  --adult-badge-color: #ea580c;
+  --adult-badge-border: rgba(234, 88, 12, 0.5);
+  --adult-badge-glow: rgba(234, 88, 12, 0.2);
+}
+
+/* sunset — тёплый закат */
+[data-theme="sunset"] {
+  --bg0: #1c1917;
+  --bg1: #292524;
+  --panel: rgba(41, 37, 36, 0.95);
+  --text: #fef9e7;
+  --muted: rgba(254, 243, 199, 0.88);
+  --neonPink: #fb923c;
+  --neonCyan: #fbbf24;
+  --neonPurple: #f97316;
+  --primary: #fb923c;
+  --primary2: #ea580c;
+  --secondary: #fbbf24;
+  --btn: #ea580c;
+  --btnText: #1c1917;
+  --danger: #f87171;
+  --border: rgba(251, 191, 36, 0.2);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --glowPink: rgba(251, 146, 60, 0.35);
+  --glowCyan: rgba(251, 191, 36, 0.35);
+  --glowPurple: rgba(249, 115, 22, 0.35);
+  --cardHoverBorder: rgba(251, 191, 36, 0.45);
+  --blob1: rgba(251, 146, 60, 0.15);
+  --blob2: rgba(251, 191, 36, 0.12);
+  --blob3: rgba(249, 115, 22, 0.1);
+  --td-panel-bg: rgba(0, 0, 0, 0.35);
+  --td-text-strong: #fef9e7;
+  --td-text-muted: rgba(254, 243, 199, 0.9);
+  --td-placeholder: rgba(254, 243, 199, 0.7);
+  --td-input-bg: rgba(0, 0, 0, 0.3);
+  --td-btn-ghost-bg: rgba(255, 255, 255, 0.1);
+  --td-border: rgba(255, 255, 255, 0.18);
+  --td-active-bg: rgba(251, 191, 36, 0.25);
+  --td-dare-bg: rgba(251, 146, 60, 0.15);
+  --td-dare-bg-strong: rgba(251, 146, 60, 0.2);
+  --td-dare-border: rgba(251, 191, 36, 0.4);
+  --td-truth-bg: rgba(251, 191, 36, 0.15);
+  --td-truth-bg-hover: rgba(251, 191, 36, 0.25);
+  --icon-accent: #FF8A65;
+  --adult-badge-bg: linear-gradient(135deg, rgba(251, 146, 60, 0.3) 0%, rgba(249, 115, 22, 0.4) 100%);
+  --adult-badge-color: #fdba74;
+  --adult-badge-border: rgba(251, 146, 60, 0.55);
+  --adult-badge-glow: rgba(251, 146, 60, 0.3);
+  --app-page-bg-color: #fff5f0;
+  --app-page-bg-image:
+    radial-gradient(ellipse 110% 70% at 50% -12%, rgba(255, 154, 139, 0.14) 0%, rgba(255, 154, 139, 0.04) 38%, transparent 70%),
+    radial-gradient(ellipse 80% 50% at 82% 10%, rgba(255, 153, 172, 0.1) 0%, transparent 65%),
+    linear-gradient(180deg, #fff8f4 0%, #fff5f0 50%, #fff0ea 100%);
+}
+
+/* Sunset / Calm: светлый shell — тёмный текст (не cream из --text) */
+[data-theme="sunset"] .home-page--sunset,
+[data-theme="sunset"] .games-page,
+[data-theme="sunset"] .card-entry-page,
+[data-theme="sunset"] .deck-select-page,
+[data-theme="sunset"] .play-page,
+[data-theme="sunset"] .mafia-page,
+[data-theme="sunset"] .alias-page,
+[data-theme="sunset"] .game-page,
+[data-theme="sunset"] .favorites-page {
+  --text: #1f1410;
+  --muted: #5c4038;
+  color: var(--text);
+}
+
+[data-theme="minimal-calm"] .home-page--calm,
+[data-theme="minimal-calm"] .games-page,
+[data-theme="minimal-calm"] .card-entry-page,
+[data-theme="minimal-calm"] .deck-select-page,
+[data-theme="minimal-calm"] .play-page,
+[data-theme="minimal-calm"] .mafia-page,
+[data-theme="minimal-calm"] .alias-page,
+[data-theme="minimal-calm"] .game-page,
+[data-theme="minimal-calm"] .favorites-page {
+  --text: #232931;
+  --muted: #4f5a55;
+  color: var(--text);
+}
+
+/* minimal-calm — минималистичный спокойный */
+[data-theme="minimal-calm"] {
+  --bg0: #0f172a;
+  --bg1: #1e293b;
+  --panel: rgba(30, 41, 59, 0.94);
+  --text: #f1f5f9;
+  --muted: rgba(226, 232, 240, 0.88);
+  --neonPink: #94a3b8;
+  --neonCyan: #38bdf8;
+  --neonPurple: #818cf8;
+  --primary: #38bdf8;
+  --primary2: #818cf8;
+  --secondary: #94a3b8;
+  --btn: #334155;
+  --btnText: #e2e8f0;
+  --danger: #f87171;
+  --border: rgba(148, 163, 184, 0.2);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --glowPink: rgba(56, 189, 248, 0.2);
+  --glowCyan: rgba(56, 189, 248, 0.3);
+  --glowPurple: rgba(129, 140, 248, 0.25);
+  --cardHoverBorder: rgba(56, 189, 248, 0.4);
+  --blob1: rgba(56, 189, 248, 0.08);
+  --blob2: rgba(129, 140, 248, 0.08);
+  --blob3: rgba(148, 163, 184, 0.06);
+  --td-panel-bg: rgba(0, 0, 0, 0.4);
+  --td-text-strong: #f1f5f9;
+  --td-text-muted: rgba(226, 232, 240, 0.9);
+  --td-placeholder: rgba(226, 232, 240, 0.7);
+  --td-input-bg: rgba(0, 0, 0, 0.35);
+  --td-btn-ghost-bg: rgba(255, 255, 255, 0.1);
+  --td-border: rgba(255, 255, 255, 0.15);
+  --td-active-bg: rgba(56, 189, 248, 0.25);
+  --td-dare-bg: rgba(56, 189, 248, 0.15);
+  --td-dare-bg-strong: rgba(56, 189, 248, 0.2);
+  --td-dare-border: rgba(56, 189, 248, 0.35);
+  --td-truth-bg: rgba(56, 189, 248, 0.15);
+  --td-truth-bg-hover: rgba(56, 189, 248, 0.25);
+  --icon-accent: currentColor;
+  --adult-badge-bg: linear-gradient(135deg, rgba(251, 146, 60, 0.2) 0%, rgba(234, 88, 12, 0.25) 100%);
+  --adult-badge-color: #fb923c;
+  --adult-badge-border: rgba(251, 146, 60, 0.45);
+  --adult-badge-glow: rgba(251, 146, 60, 0.2);
+  --app-page-bg-color: #f7f8f7;
+  --app-page-bg-image:
+    radial-gradient(ellipse 110% 70% at 50% -12%, rgba(139, 168, 150, 0.1) 0%, rgba(139, 168, 150, 0.03) 38%, transparent 70%),
+    radial-gradient(ellipse 80% 50% at 82% 10%, rgba(168, 181, 196, 0.08) 0%, transparent 65%),
+    linear-gradient(180deg, #f9faf9 0%, #f7f8f7 50%, #f3f5f4 100%);
+}
+
+/* Gradient background + glow blobs (uses theme variables) + slow move */
+.app {
+  position: relative;
+  min-height: 100vh;
+  background: var(--bg0);
+  background-image:
+    linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 50%, var(--bg0) 100%),
+    radial-gradient(ellipse 70% 45% at 15% 15%, var(--blob1) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 85% 75%, var(--blob2) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 50% 50%, var(--blob3) 0%, transparent 45%);
+  background-size: 100% 100%, 120% 120%, 110% 110%, 100% 100%;
+  background-position: 0 0, 0% 0%, 100% 100%, 50% 50%;
+  background-repeat: no-repeat;
+  animation: theme-bg-move 20s ease-in-out infinite;
+}
+
+@keyframes theme-bg-move {
+  0%, 100% { background-position: 0 0, 0% 0%, 100% 100%, 50% 50%; }
+  50% { background-position: 0 0, 10% 5%, 90% 95%, 55% 45%; }
+}
+
+/* Optional soft grain */
+.app::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}

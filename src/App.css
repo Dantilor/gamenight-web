@@ -1,0 +1,329 @@
+@import "./styles/responsive.css";
+
+/* Роуты: не сжимать контент — страница скроллится в .app */
+.app > * {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  --pad: clamp(0.75rem, 3vw, 1rem);
+  padding-top: calc(max(var(--pad), var(--safe-top)) + var(--tg-header-offset));
+  padding-right: max(var(--pad), var(--safe-right));
+  padding-bottom: max(var(--pad), var(--safe-bottom));
+  padding-left: max(var(--pad), var(--safe-left));
+  height: 100%;
+  min-height: var(--app-height);
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-x: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.app::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent;
+}
+
+.app::-webkit-scrollbar-thumb,
+.app::-webkit-scrollbar-track {
+  display: none !important;
+  background: transparent;
+}
+
+.app h1 {
+  margin: 0 0 0.5rem;
+}
+
+.app p {
+  margin: 0;
+}
+
+html[data-theme="neon-dark"] .app:not(:has(.mafia-page)) p,
+html[data-theme="neon-light"] .app:not(:has(.mafia-page)) p {
+  color: var(--text);
+}
+
+/* Тяжёлые эффекты включаем после первого кадра, чтобы первый рендер был быстрым */
+.app:not(.is-ready) .card,
+.app:not(.is-ready) .premium-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Cards — glassmorphism + soft glow. Hover через pseudo (opacity), без анимации box-shadow. */
+.card {
+  position: relative;
+  background: var(--panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius, 12px);
+  box-shadow: var(--shadow);
+  padding: 1rem;
+  color: var(--text);
+}
+
+/* Hover glow — слой с box-shadow, анимация только opacity (GPU-friendly) */
+@media (hover: hover) and (pointer: fine) {
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: calc(var(--radius, 12px) + 2px);
+    box-shadow: 0 0 24px var(--glowCyan);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-med);
+  }
+  .card:hover::before {
+    opacity: 1;
+  }
+  [data-theme="neon-light"] .card::before {
+    box-shadow: 0 0 16px var(--glowCyan);
+  }
+  .card {
+    transition: transform var(--transition-fast), border-color var(--transition-med);
+    will-change: transform;
+  }
+  .card:hover {
+    border-color: var(--cardHoverBorder, rgba(43, 210, 255, 0.35));
+  }
+}
+
+/* Active tile: subtle sparkle in corner */
+.tile--active::after {
+  content: "";
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tile--active::after {
+    animation: sparkle-pulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes sparkle-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Badges: PRO (premium), NEW, SOON */
+.badge-premium,
+.badge--pro,
+.badge--premium {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.35rem 0.6rem 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: var(--radius-sm, 6px);
+  background: linear-gradient(135deg, var(--neonPink) 0%, var(--neonPurple) 100%);
+  color: #fff;
+  box-shadow: 0 0 12px var(--glowPink);
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .badge-premium, .badge--pro, .badge--premium {
+    animation: badge-shimmer 2.5s ease-in-out infinite;
+  }
+}
+
+.badge-premium::after,
+.badge--pro::after,
+.badge--premium::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 35%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 65%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  pointer-events: none;
+  opacity: 0.28;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .badge-premium::after, .badge--pro::after, .badge--premium::after {
+    animation: badge-sparkle 2.6s ease-in-out infinite;
+  }
+}
+
+[data-theme="neon-light"] .badge-premium::after, [data-theme="neon-light"] .badge--pro::after, [data-theme="neon-light"] .badge--premium::after {
+  opacity: 0.2;
+}
+
+.badge--new {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm, 6px);
+  background: rgba(43, 210, 255, 0.2);
+  color: var(--neonCyan);
+  border: 1px solid rgba(43, 210, 255, 0.4);
+}
+
+.badge--soon {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm, 6px);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.badge--adult {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.45rem;
+  border-radius: var(--radius-sm, 6px);
+  background: var(--adult-badge-bg, linear-gradient(135deg, rgba(234, 88, 12, 0.25) 0%, rgba(194, 65, 12, 0.35) 100%));
+  color: var(--adult-badge-color, #fb923c);
+  border: 1px solid var(--adult-badge-border, rgba(234, 88, 12, 0.4));
+  box-shadow: 0 0 8px var(--adult-badge-glow, rgba(251, 146, 60, 0.2));
+}
+
+@keyframes badge-shimmer {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.9; filter: brightness(1.15); }
+}
+
+@keyframes badge-sparkle {
+  0%, 100% { background-position: 200% 0; }
+  50% { background-position: -100% 0; }
+}
+
+/* Buttons. Hover только при мыши. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.4rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: var(--radius, 12px);
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn {
+    transition: transform var(--transition-fast), box-shadow var(--transition-med), opacity var(--transition-med);
+  }
+  .btn--primary:hover:not(:disabled) {
+    box-shadow: 0 0 28px var(--glowPink), 0 0 40px var(--glowPurple);
+  }
+  .btn--secondary:hover:not(:disabled) {
+    box-shadow: 0 0 20px var(--glowCyan);
+    background: rgba(43, 210, 255, 0.08);
+  }
+  .btn--ghost:hover:not(:disabled) {
+    background: var(--panel);
+    border-color: var(--secondary);
+    box-shadow: 0 0 16px var(--glowCyan);
+  }
+  .btn--danger:hover:not(:disabled) {
+    box-shadow: 0 0 20px rgba(255, 77, 77, 0.45);
+  }
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--neonPink) 0%, var(--neonPurple) 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 0 20px var(--glowPink);
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--neonCyan);
+  border: 2px solid var(--neonCyan);
+  box-shadow: 0 0 12px var(--glowCyan);
+}
+
+.btn--ghost {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn--danger {
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  box-shadow: 0 0 12px rgba(255, 77, 77, 0.35);
+}
+
+/* Кнопка «Назад» — размер как «Домой»; на странице игр стиль задаёт Games.css */
+#root .btn.btn--ghost[class*="__back"]:not(.games-page__nav-btn):not(.profile-page__nav-btn):not(.card-entry-page__nav-btn):not(.deck-select-page__nav-btn):not(.play-page__nav-btn):not(.mafia-page__nav-btn):not(.alias-page__nav-btn):not(.game-page__nav-btn):not(.favorites-page__nav-btn) {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 11px 22px !important;
+  font-size: 0.95rem !important;
+  font-family: inherit !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  flex-shrink: 0 !important;
+  min-height: 47px !important;
+  min-width: 121px !important;
+  box-sizing: border-box !important;
+  border-radius: var(--radius, 12px) !important;
+  background: var(--panel) !important;
+  border: 1px solid var(--border) !important;
+}

@@ -1,0 +1,238 @@
+@import "./styles/theme.css";
+@import "./styles/layout.css";
+@import "./ui/icons/icons.css";
+
+:root {
+  font-family: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--text);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-size-adjust: 100%;
+  --app-height: 100vh;
+  --app-height: 100dvh;
+  /* Safe area для iOS (вырезы, домашняя зона) */
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+  --safe-left: env(safe-area-inset-left);
+  --safe-right: env(safe-area-inset-right);
+  /* Доп. отступ под панель Telegram (Close, темы, меню) — content не залезает на header */
+  --tg-header-offset: 3.5rem;
+  /* Design tokens */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --glow: 0 0 20px var(--glowCyan, rgba(43, 210, 255, 0.35));
+  --transition-fast: 150ms ease;
+  --transition-med: 220ms ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+  background-color: var(--bg0);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html {
+  background-color: var(--bg0);
+  height: 100%;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  height: 100%;
+  background-color: var(--bg0);
+  color: var(--text);
+  overscroll-behavior: none;
+}
+
+/* Headings: Unbounded */
+h1, h2, .font-heading {
+  font-family: "Unbounded", "Manrope", system-ui, sans-serif;
+}
+
+/* Buttons: Manrope 600 */
+.btn {
+  font-weight: 600;
+}
+
+#root {
+  height: 100%;
+  min-height: var(--app-height);
+  background-color: var(--bg0);
+  overflow: hidden;
+  max-width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#root::-webkit-scrollbar {
+  display: none;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent;
+}
+
+/* Скрыть полосу прокрутки везде — скролл жестом/колёсиком остаётся */
+*,
+*::before,
+*::after {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+  background: transparent !important;
+}
+
+*::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+.font-mono {
+  font-family: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, monospace;
+}
+
+.page-loading {
+  min-height: 40vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  opacity: 0.95;
+  color: var(--text, #e4e4e4);
+  padding: 1rem;
+}
+
+.app-loading {
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.app-loading__spinner {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border, rgba(255,255,255,0.15));
+  border-top-color: var(--neonCyan, #2bd2ff);
+  border-radius: 50%;
+  animation: app-loading-spin 0.7s linear infinite;
+}
+
+@keyframes app-loading-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Skeleton при первой загрузке lazy-страницы: сетка карточек без текста "Загрузка..." */
+.page-loading-skeleton {
+  padding: clamp(1rem, 4vw, 1.5rem);
+  min-height: 40vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.page-loading-skeleton__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(0.75rem, 3vw, 1rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+@media (min-width: 640px) {
+  .page-loading-skeleton__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.page-loading-skeleton__card {
+  min-height: 7.5rem;
+  border-radius: var(--radius, 12px);
+  border: 1px solid var(--border);
+  background: var(--panel);
+  opacity: 0.7;
+  animation: page-loading-skeleton-pulse 1.2s ease-in-out infinite;
+}
+@keyframes page-loading-skeleton-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.85; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-loading-skeleton__card {
+    animation: none;
+    opacity: 0.75;
+  }
+}
+
+/* Inputs inherit readable colors */
+input,
+textarea {
+  color: var(--text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+}
+
+/* Improved text contrast on mobile */
+@media (max-width: 480px) {
+  body {
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Кнопка «Назад» — размер и выравнивание как «Домой»; на странице игр — Games.css */
+#root .btn.btn--ghost[class*="__back"]:not(.games-page__nav-btn):not(.profile-page__nav-btn):not(.card-entry-page__nav-btn):not(.deck-select-page__nav-btn):not(.play-page__nav-btn):not(.mafia-page__nav-btn):not(.alias-page__nav-btn):not(.game-page__nav-btn):not(.favorites-page__nav-btn) {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 11px 22px !important;
+  font-size: 0.95rem !important;
+  font-family: inherit !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  flex-shrink: 0 !important;
+  min-height: 47px !important;
+  min-width: 121px !important;
+  box-sizing: border-box !important;
+  border-radius: var(--radius, 12px) !important;
+  background: var(--panel) !important;
+  border: 1px solid var(--border) !important;
+}

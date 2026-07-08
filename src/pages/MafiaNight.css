@@ -1,0 +1,38 @@
+.mafia-night {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.mafia-night__intro {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 1.25rem;
+  text-align: center;
+  margin: 0 auto;
+  width: 100%;
+  max-width: min(22rem, 92vw);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.mafia-night__intro-text {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--mafia-readable-muted);
+  line-height: 1.4;
+}
+
+.mafia-night__mafia-name {
+  pointer-events: none;
+  cursor: default;
+  font-weight: 700;
+}
+
+.mafia-night-step__content {
+  gap: 0.65rem;
+}

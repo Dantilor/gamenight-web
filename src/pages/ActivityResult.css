@@ -1,0 +1,122 @@
+.activity-result {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.activity-result__header {
+  text-align: center;
+  margin: 0.5rem 0 1.25rem;
+}
+
+.activity-result__title {
+  margin: 0 0 0.75rem;
+  font-family: "Unbounded", "Manrope", system-ui, sans-serif;
+  font-size: clamp(1.35rem, 4.5vw, 1.65rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--game-shell-readable-text);
+}
+
+.activity-result__winner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  background: var(--game-shell-chip-active-bg);
+  border: 1.5px solid var(--game-shell-chip-active-border);
+  box-shadow: var(--game-shell-chip-active-glow);
+}
+
+.activity-result__winner-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--game-shell-readable-accent);
+}
+
+.activity-result__winner-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--game-shell-readable-text);
+}
+
+.activity-result__winner-score {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--game-shell-readable-muted);
+}
+
+.activity-result__scores-title {
+  margin: 0 0 0.65rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--game-shell-readable-accent);
+}
+
+.activity-result__scores-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: 1.25rem;
+}
+
+.activity-result__score-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+}
+
+.activity-result__score-row--winner {
+  box-shadow: var(--game-shell-chip-active-glow), var(--games-card-shadow);
+}
+
+.activity-result__score-position {
+  flex-shrink: 0;
+  width: 1.75rem;
+  font-family: "Unbounded", "Manrope", system-ui, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--game-shell-readable-accent);
+  text-align: center;
+}
+
+.activity-result__score-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.activity-result__score-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--game-shell-readable-text);
+}
+
+.activity-result__score-guessed {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--game-shell-readable-muted);
+}
+
+.activity-result__score-value {
+  flex-shrink: 0;
+  font-family: "Unbounded", "Manrope", system-ui, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--game-shell-readable-text);
+}
+
+.activity-result__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: auto;
+  padding-bottom: max(0.25rem, var(--safe-bottom));
+}

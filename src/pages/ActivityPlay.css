@@ -1,0 +1,280 @@
+.activity-play,
+.activity-play--session {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.activity-play__score-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-bottom: 0.65rem;
+}
+
+.activity-play__score-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 999px;
+  color: var(--game-shell-readable-muted);
+  background: var(--game-shell-chip-bg);
+  border: 1.5px solid var(--game-shell-chip-border);
+}
+
+.activity-play__score-item--highlight {
+  color: var(--game-shell-readable-text);
+  background: var(--game-shell-chip-active-bg);
+  border-color: var(--game-shell-chip-active-border);
+  box-shadow: var(--game-shell-chip-active-glow);
+}
+
+.activity-play__turn-ready,
+.activity-play__results-header {
+  text-align: center;
+  margin: 0.5rem 0 1rem;
+}
+
+.activity-play__turn-title,
+.activity-play__results-title {
+  margin: 0 0 0.35rem;
+  font-family: "Unbounded", "Manrope", system-ui, sans-serif;
+  font-size: clamp(1.25rem, 4.5vw, 1.55rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--game-shell-readable-text);
+}
+
+.activity-play__team-name,
+.activity-play__results-team {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--game-shell-readable-muted);
+}
+
+.activity-play__turn-info {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.35rem 1.1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.activity-play__turn-timer {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--game-shell-readable-accent);
+}
+
+.activity-play__turn-hint {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--game-shell-readable-muted);
+}
+
+.activity-play__turn-actions,
+.activity-play__actions,
+.activity-play__results-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: auto;
+  padding-bottom: max(0.25rem, var(--safe-bottom));
+}
+
+.activity-play__timer-wrap {
+  position: relative;
+  height: 2.65rem;
+  margin: 0.25rem 0 0.85rem;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--game-shell-progress-bg);
+  border: 1.5px solid var(--game-shell-progress-border);
+}
+
+.activity-play__timer-bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--games-play-glow), color-mix(in srgb, var(--games-sparkle, var(--games-play-glow)) 80%, white));
+  transition: width 0.25s linear;
+}
+
+.activity-play__timer-bar--pulse {
+  animation: activity-timer-pulse 1s ease-in-out infinite;
+}
+
+@keyframes activity-timer-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.72; }
+}
+
+.activity-play__timer-text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--game-shell-readable-text);
+}
+
+.activity-play__card {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  min-height: 11rem;
+  margin-bottom: 1rem;
+  padding: 1.5rem 1.1rem;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .activity-play__card {
+    animation: activity-card-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@keyframes activity-card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.activity-play__task {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--game-shell-readable-accent);
+}
+
+.activity-play__word {
+  margin: 0;
+  font-family: "Unbounded", "Manrope", system-ui, sans-serif;
+  font-size: clamp(1.45rem, 6vw, 2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  word-break: break-word;
+  color: var(--game-shell-readable-text);
+}
+
+.activity-play__footer {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.activity-play__exit {
+  font-size: 0.88rem !important;
+  font-weight: 600 !important;
+  color: var(--game-shell-readable-muted) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  min-height: auto !important;
+  padding: 0.5rem !important;
+}
+
+.activity-play__results-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+  padding: 1rem;
+}
+
+.activity-play__results-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.activity-play__results-value {
+  font-family: "Unbounded", "Manrope", system-ui, sans-serif;
+  font-size: clamp(1.6rem, 6vw, 2rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--game-shell-readable-accent);
+}
+
+.activity-play__results-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--game-shell-readable-muted);
+}
+
+.activity-play__results-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.95rem 1rem;
+}
+
+.activity-play__results-total-label {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--game-shell-readable-muted);
+}
+
+.activity-play__results-total-value {
+  font-family: "Unbounded", "Manrope", system-ui, sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--game-shell-readable-text);
+}
+
+.activity-play__message {
+  margin: auto;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--game-shell-readable-muted);
+}
+
+.activity-play__modal-btns {
+  display: flex;
+  gap: 0.55rem;
+}
+
+.activity-play__modal-btns .game-page__btn--secondary,
+.activity-play__modal-btns .game-page__cta {
+  flex: 1;
+  min-height: 2.75rem;
+  font-size: 0.92rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .activity-play__card {
+    animation: none;
+  }
+
+  .activity-play__timer-bar--pulse {
+    animation: none;
+  }
+}
