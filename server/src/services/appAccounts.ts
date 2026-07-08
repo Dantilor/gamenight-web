@@ -63,20 +63,59 @@ async function getTelegramIdentityByAccountId(accountId: string): Promise<Telegr
 export async function getPremiumByAppAccountId(accountId: string): Promise<{
   premium: boolean
   activeUntil: string | null
-  source: 'legacy_telegram_subscription' | null
+  source: 'app_entitlement' | 'legacy_telegram_subscription' | null
   telegramLinked: boolean
 }> {
+  // NOTE: Telegram /api/me still reads legacy subscriptions only.
+  // To reflect web entitlements inside Telegram client, a next step is:
+  // 1) add app_entitlements as additional source in /api/me via telegram identity, or
+  // 2) mirror web entitlements into legacy subscriptions for linked telegram_id.
+  const entitlementPremium = await getPremiumByAppEntitlement(accountId)
   const telegramIdentity = await getTelegramIdentityByAccountId(accountId)
-  if (!telegramIdentity) {
-    return { premium: false, activeUntil: null, source: null, telegramLinked: false }
+  const telegramLinked = Boolean(telegramIdentity)
+  const legacyPremium: { premium: boolean; activeUntil: string | null; source: 'legacy_telegram_subscription' | null } = telegramIdentity
+    ? await getPremiumByTelegramId(telegramIdentity.provider_user_id)
+    : { premium: false, activeUntil: null, source: null }
+
+  const entitlementDate = entitlementPremium.activeUntil ? new Date(entitlementPremium.activeUntil) : null
+  const legacyDate = legacyPremium.activeUntil ? new Date(legacyPremium.activeUntil) : null
+
+  if (entitlementDate && legacyDate) {
+    if (entitlementDate >= legacyDate) {
+      return {
+        premium: true,
+        activeUntil: entitlementPremium.activeUntil,
+        source: 'app_entitlement',
+        telegramLinked,
+      }
+    }
+    return {
+      premium: true,
+      activeUntil: legacyPremium.activeUntil,
+      source: 'legacy_telegram_subscription',
+      telegramLinked,
+    }
   }
-  const premium = await getPremiumByTelegramId(telegramIdentity.provider_user_id)
-  return {
-    premium: premium.premium,
-    activeUntil: premium.activeUntil,
-    source: premium.source,
-    telegramLinked: true,
+
+  if (entitlementDate) {
+    return {
+      premium: true,
+      activeUntil: entitlementPremium.activeUntil,
+      source: 'app_entitlement',
+      telegramLinked,
+    }
   }
+
+  if (legacyDate) {
+    return {
+      premium: true,
+      activeUntil: legacyPremium.activeUntil,
+      source: 'legacy_telegram_subscription',
+      telegramLinked,
+    }
+  }
+
+  return { premium: false, activeUntil: null, source: null, telegramLinked }
 }
 
 async function getAccountById(accountId: string): Promise<AccountRow | null> {
@@ -175,6 +214,43 @@ export async function ensurePhoneLogin(phoneRaw: string): Promise<{ token: strin
   await upsertPhoneIdentity(account.id, phone)
   const token = await createWebSessionToken(account.id)
   return { token, user: buildAppAccountUser(account, false, null, false) }
+}
+
+export async function getPremiumByAppEntitlement(accountId: string): Promise<{
+  premium: boolean
+  activeUntil: string | null
+  source: 'app_entitlement' | null
+}> {
+  const res = await query<{ active_until: Date }>(
+    `SELECT active_until
+     FROM app_entitlements
+     WHERE account_id = $1
+       AND product = 'premium'
+       AND active_until > now()
+     ORDER BY active_until DESC
+     LIMIT 1`,
+    [accountId],
+  )
+  const row = res.rows[0]
+  if (!row) return { premium: false, activeUntil: null, source: null }
+  return {
+    premium: true,
+    activeUntil: new Date(row.active_until).toISOString(),
+    source: 'app_entitlement',
+  }
+}
+
+export async function grantPremiumToAppAccount(
+  accountId: string,
+  activeUntil: Date,
+  source: 'web_manual' | 'web_payment' | 'legacy_mirror' | 'admin',
+  metadata: Record<string, unknown> = {},
+): Promise<void> {
+  await query(
+    `INSERT INTO app_entitlements (account_id, product, source, active_until, metadata)
+     VALUES ($1, 'premium', $2, $3, $4::jsonb)`,
+    [accountId, source, activeUntil, JSON.stringify(metadata)],
+  )
 }
 
 function randomLinkCode(length = 6): string {

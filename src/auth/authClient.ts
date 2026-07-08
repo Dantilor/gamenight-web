@@ -232,6 +232,35 @@ export async function createTelegramLinkCode(): Promise<{
   }
 }
 
+export async function grantPremiumDev(
+  accountId: string,
+  days = 30,
+): Promise<{ ok: boolean; premium?: boolean; activeUntil?: string | null; source?: string | null; error?: string }> {
+  try {
+    const data = await requestJson<{
+      premium?: boolean
+      activeUntil?: string | null
+      source?: string | null
+    }>('/api/dev/grant-premium', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders(),
+      },
+      body: JSON.stringify({ accountId, days }),
+    })
+    await getMe()
+    return {
+      ok: true,
+      premium: data.premium,
+      activeUntil: data.activeUntil ?? null,
+      source: data.source ?? null,
+    }
+  } catch (e) {
+    return { ok: false, error: toErrorMessage(e, 'Не удалось выдать Premium') }
+  }
+}
+
 export async function loginWithPhoneDev(phone: string, code: string): Promise<{ ok: boolean; user: AppUser; error?: string }> {
   return verifyCode(phone, code)
 }

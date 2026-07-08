@@ -40,6 +40,7 @@ function Profile() {
     loginWithPhoneDev,
     getMe,
     createTelegramLinkCode,
+    grantPremiumDev,
     logout,
     isAuthenticated,
   } = useAuth()
@@ -63,6 +64,7 @@ function Profile() {
   const [linkLoading, setLinkLoading] = useState(false)
   const [statusLoading, setStatusLoading] = useState(false)
   const [linkError, setLinkError] = useState<string | null>(null)
+  const [devGrantLoading, setDevGrantLoading] = useState(false)
   const [restoreStatus, setRestoreStatus] = useState<string | null>(null)
   const [restoreLoading, setRestoreLoading] = useState(false)
   const restoreTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -127,6 +129,20 @@ function Profile() {
     await refreshPremium()
     setStatusLoading(false)
   }, [getMe, refreshPremium])
+
+  const handleDevGrantPremium = useCallback(async () => {
+    if (!import.meta.env.DEV || !appUser.id) return
+    haptic('medium')
+    setDevGrantLoading(true)
+    setLinkError(null)
+    const result = await grantPremiumDev(appUser.id, 30)
+    if (!result.ok) {
+      setLinkError(result.error ?? 'Не удалось выдать Premium')
+    }
+    await getMe()
+    await refreshPremium()
+    setDevGrantLoading(false)
+  }, [appUser.id, getMe, grantPremiumDev, refreshPremium])
 
   const errorMessage = getErrorMessage()
   const activeUntilLabel = activeUntil
@@ -256,6 +272,20 @@ function Profile() {
                 </span>
                 <span className="profile-menu__chev" aria-hidden>›</span>
               </button>
+              {import.meta.env.DEV && (
+                <button
+                  type="button"
+                  className="profile-menu__row"
+                  onClick={handleDevGrantPremium}
+                  disabled={devGrantLoading}
+                >
+                  <span className="profile-menu__icon" aria-hidden>🧪</span>
+                  <span className="profile-menu__label">
+                    {devGrantLoading ? 'Выдаем…' : 'Выдать Premium на 30 дней'}
+                  </span>
+                  <span className="profile-menu__chev" aria-hidden>›</span>
+                </button>
+              )}
               {linkError && <p className="profile-alert profile-alert--error">{linkError}</p>}
               {isPremium && (
                 <p className="profile-pass__desc">

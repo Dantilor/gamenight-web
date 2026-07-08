@@ -5,6 +5,7 @@ import {
   createTelegramLinkCode as createTelegramLinkCodeClient,
   getCurrentUser as getCurrentUserClient,
   getMe as getMeClient,
+  grantPremiumDev as grantPremiumDevClient,
   isAuthenticated as isAuthenticatedClient,
   requestCode as requestCodeClient,
   verifyCode as verifyCodeClient,
@@ -23,6 +24,7 @@ export function useAuth(): {
   loginWithPhoneDev: (phone: string, code: string) => Promise<LoginResult>
   getMe: () => Promise<{ ok: boolean; user: AppUser; error?: string }>
   createTelegramLinkCode: () => Promise<{ ok: boolean; code?: string; telegramStartUrl?: string; error?: string }>
+  grantPremiumDev: (accountId: string, days?: number) => Promise<{ ok: boolean; premium?: boolean; activeUntil?: string | null; source?: string | null; error?: string }>
   logout: () => Promise<void>
 } {
   const [user, setUser] = useState<AppUser>(() => getCurrentUserClient())
@@ -63,6 +65,7 @@ export function useAuth(): {
     return result
   }, [])
   const createTelegramLinkCode = useCallback(() => createTelegramLinkCodeClient(), [])
+  const grantPremiumDev = useCallback((accountId: string, days = 30) => grantPremiumDevClient(accountId, days), [])
   const logout = useCallback(async () => {
     await logoutClient()
     setUser(getCurrentUserClient())
@@ -78,6 +81,7 @@ export function useAuth(): {
     loginWithPhoneDev,
     getMe,
     createTelegramLinkCode,
+    grantPremiumDev,
     logout,
   }
 }
