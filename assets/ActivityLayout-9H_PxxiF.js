@@ -1,0 +1,1 @@
+import{j as t,O as r}from"./index-D7CwUaah.js";import{A as i}from"./ActivityStateContext-D4F29W6n.js";/* empty css                      */function a(){return t.jsx(i,{children:t.jsx(r,{})})}export{a as default};
