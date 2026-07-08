@@ -7,6 +7,8 @@ import premiumRouter from './routes/premium.js'
 import meRouter from './routes/me.js'
 import plansRouter from './routes/plans.js'
 import yookassaRouter from './routes/yookassa.js'
+import webAuthRouter from './routes/webAuth.js'
+import accountRouter from './routes/account.js'
 import apiRouter from './api.js'
 import eventsRouter from './routes/events.js'
 import publicStatsRouter from './routes/publicStats.js'
@@ -79,6 +81,8 @@ app.use('/api', premiumRouter)
 app.use('/api', meRouter)
 app.use('/api', plansRouter)
 app.use('/api', yookassaRouter) // YooKassa webhook: POST /api/yookassa/webhook
+app.use('/api', webAuthRouter)
+app.use('/api', accountRouter)
 app.use('/api', apiRouter)
 app.use('/api', eventsRouter)
 app.use('/api', publicStatsRouter)

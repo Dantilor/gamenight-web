@@ -1,6 +1,7 @@
 import { Telegraf, type Context } from 'telegraf'
 import { savePendingReferral } from './services/referrals.js'
 import { query } from './db.js'
+import { confirmTelegramLink } from './services/appAccounts.js'
 
 console.log('[bot] module loaded')
 
@@ -43,6 +44,13 @@ function parseInviterTelegramId(payload: string): number | null {
   return inviterTelegramId
 }
 
+function parseLinkCode(payload: string): string | null {
+  if (!payload.startsWith('link_')) return null
+  const code = payload.slice(5).trim().toUpperCase()
+  if (!code) return null
+  return code
+}
+
 if (bot) {
   bot.catch((err, ctx) => {
     const update = ctx.update as { update_id?: number } | undefined
@@ -61,6 +69,33 @@ if (bot) {
     const userId = ctx.from?.id
     const payload = extractStartPayload(ctx)
     const inviterTelegramId = parseInviterTelegramId(payload)
+    const linkCode = parseLinkCode(payload)
+
+    if (userId && linkCode) {
+      try {
+        await confirmTelegramLink({
+          code: linkCode,
+          telegramId: String(userId),
+          telegramUsername: ctx.from?.username ?? null,
+          firstName: ctx.from?.first_name ?? null,
+        })
+        await ctx.reply(
+          'Готово, Telegram привязан к аккаунту GameNight Host. Теперь подписка будет синхронизироваться между сайтом и Telegram.'
+        )
+      } catch (e) {
+        const err = e as Error & { status?: number }
+        if (err.status === 409) {
+          await ctx.reply('Этот Telegram уже привязан к другому аккаунту.')
+        } else if (err.status === 410) {
+          await ctx.reply('Код привязки устарел. Сгенерируйте новый код на сайте.')
+        } else if (err.status === 404) {
+          await ctx.reply('Код привязки не найден. Проверьте код и попробуйте снова.')
+        } else {
+          await ctx.reply('Не удалось привязать Telegram. Попробуйте ещё раз позже.')
+        }
+      }
+      return
+    }
 
     if (userId && inviterTelegramId && inviterTelegramId !== userId) {
       savePendingReferral(userId, inviterTelegramId)

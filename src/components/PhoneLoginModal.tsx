@@ -6,30 +6,41 @@ import './PhoneLoginModal.css'
 type Props = {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (phone: string, code: string) => { ok: boolean; error?: string }
+  onRequestCode: (phone: string) => Promise<{ ok: boolean; error?: string }>
+  onSubmit: (phone: string, code: string) => Promise<{ ok: boolean; error?: string }>
 }
 
-export default function PhoneLoginModal({ isOpen, onClose, onSubmit }: Props) {
+export default function PhoneLoginModal({ isOpen, onClose, onRequestCode, onSubmit }: Props) {
   const [phone, setPhone] = useState('')
   const [code, setCode] = useState('')
   const [step, setStep] = useState<'phone' | 'code'>('phone')
   const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   if (!isOpen) return null
 
-  const handleRequestCode = () => {
+  const handleRequestCode = async () => {
     haptic('light')
     if (!phone.trim()) {
       setError('Введите номер телефона')
+      return
+    }
+    setLoading(true)
+    const result = await onRequestCode(phone)
+    setLoading(false)
+    if (!result.ok) {
+      setError(result.error ?? 'Не удалось отправить код')
       return
     }
     setError(null)
     setStep('code')
   }
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     haptic('medium')
-    const result = onSubmit(phone, code)
+    setLoading(true)
+    const result = await onSubmit(phone, code)
+    setLoading(false)
     if (!result.ok) {
       setError(result.error ?? 'Не удалось войти')
       return
@@ -84,12 +95,12 @@ export default function PhoneLoginModal({ isOpen, onClose, onSubmit }: Props) {
         {error && <p className="phone-login-modal__error">{error}</p>}
 
         {step === 'phone' ? (
-          <button type="button" className="phone-login-modal__btn" onClick={handleRequestCode}>
-            Получить код
+          <button type="button" className="phone-login-modal__btn" onClick={handleRequestCode} disabled={loading}>
+            {loading ? 'Отправка…' : 'Получить код'}
           </button>
         ) : (
-          <button type="button" className="phone-login-modal__btn" onClick={handleLogin}>
-            Войти
+          <button type="button" className="phone-login-modal__btn" onClick={handleLogin} disabled={loading}>
+            {loading ? 'Вход…' : 'Войти'}
           </button>
         )}
       </div>

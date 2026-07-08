@@ -34,7 +34,14 @@ function Profile() {
   const handleBack = useBack('/')
   const platform = getPlatform()
   const telegramUser = getTgUser()
-  const { user: appUser, loginWithPhoneDev, logout, isAuthenticated } = useAuth()
+  const {
+    user: appUser,
+    requestCode,
+    loginWithPhoneDev,
+    createTelegramLinkCode,
+    logout,
+    isAuthenticated,
+  } = useAuth()
   const user = telegramUser ?? (appUser.source === 'web'
     ? {
         first_name: appUser.firstName ?? 'Web User',
@@ -50,6 +57,10 @@ function Profile() {
   const [premiumOverlayOpen, setPremiumOverlayOpen] = useState(false)
   const [documentModalType, setDocumentModalType] = useState<DocumentType | null>(null)
   const [phoneLoginOpen, setPhoneLoginOpen] = useState(false)
+  const [linkCode, setLinkCode] = useState<string | null>(null)
+  const [linkUrl, setLinkUrl] = useState<string | null>(null)
+  const [linkLoading, setLinkLoading] = useState(false)
+  const [linkError, setLinkError] = useState<string | null>(null)
   const [restoreStatus, setRestoreStatus] = useState<string | null>(null)
   const [restoreLoading, setRestoreLoading] = useState(false)
   const restoreTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -91,6 +102,20 @@ function Profile() {
     if (authError) return 'Откройте внутри Telegram'
     return null
   }
+
+  const handleCreateTelegramLink = useCallback(async () => {
+    haptic('medium')
+    setLinkLoading(true)
+    setLinkError(null)
+    const result = await createTelegramLinkCode()
+    setLinkLoading(false)
+    if (!result.ok) {
+      setLinkError(result.error ?? 'Не удалось создать код привязки')
+      return
+    }
+    setLinkCode(result.code ?? null)
+    setLinkUrl(result.telegramStartUrl ?? null)
+  }, [createTelegramLinkCode])
 
   const errorMessage = getErrorMessage()
   const activeUntilLabel = activeUntil
@@ -184,6 +209,38 @@ function Profile() {
                   <span className="profile-menu__label">Выйти из аккаунта</span>
                   <span className="profile-menu__chev" aria-hidden>›</span>
                 </button>
+              )}
+            </div>
+          </section>
+        )}
+
+        {isWebMode && appUser.source === 'web' && (
+          <section className="profile-menu">
+            <h2 className="profile-menu__title">Привязка Telegram</h2>
+            <div className="profile-menu__panel">
+              <button
+                type="button"
+                className="profile-menu__row"
+                onClick={handleCreateTelegramLink}
+                disabled={linkLoading}
+              >
+                <span className="profile-menu__icon" aria-hidden>🔗</span>
+                <span className="profile-menu__label">
+                  {linkLoading ? 'Генерируем код…' : 'Привязать Telegram'}
+                </span>
+                <span className="profile-menu__chev" aria-hidden>›</span>
+              </button>
+              {linkError && <p className="profile-alert profile-alert--error">{linkError}</p>}
+              {linkCode && (
+                <div className="profile-pass__inactive">
+                  <p className="profile-pass__title">Код привязки: {linkCode}</p>
+                  <p className="profile-pass__desc">Откройте бота по ссылке, чтобы привязать Telegram к этому аккаунту.</p>
+                  {linkUrl && (
+                    <a className="profile-pass__cta" href={linkUrl} target="_blank" rel="noreferrer">
+                      Открыть Telegram
+                    </a>
+                  )}
+                </div>
               )}
             </div>
           </section>
@@ -301,6 +358,7 @@ function Profile() {
       <PhoneLoginModal
         isOpen={phoneLoginOpen}
         onClose={() => setPhoneLoginOpen(false)}
+        onRequestCode={(phone) => requestCode(phone)}
         onSubmit={(phone, code) => loginWithPhoneDev(phone, code)}
       />
       <DocumentModal
